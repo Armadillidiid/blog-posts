@@ -5,6 +5,7 @@ date:
 tags: React,Nextjs,FrontendDevelopment
 canonical_url: https://blog.emmanuelisenah.com/unveiling-react-server-components
 ---
+![Cover](https://cdn.hashnode.com/res/hashnode/image/upload/v1713253147290/da5a8e46-43ae-4c85-892a-e76d4012d11c.png?w=1600&h=840&fit=crop&crop=entropy&auto=compress,format&format=webp)
 
 React has undergone a significant evolution since its inception in 2013, transitioning from Higher-Order Components (HOCs) and lifecycle methods to the introduction of hooks in 2019. Now, one of the most recent and monumental changes is the advent of **_React Server Components_**. It opens the doors to running React code exclusively on the server.
 

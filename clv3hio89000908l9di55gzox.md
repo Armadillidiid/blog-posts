@@ -302,7 +302,7 @@ Consequently, in a render tree, we might encounter a scenario where a server com
 
 To better illustrate this, take for example the following component structure:
 
-<iframe src="https://codesandbox.io/p/github/Armadillidiid/render-and-module-tree-demo/main?embed=1&file=%2Fapp%2Fpage.js" style="width:100%;height:500px;border:0;border-radius:4px;overflow:hidden" sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"></iframe>
+<iframe src="https://codesandbox.io/p/devbox/github/Armadillidiid/render-and-module-tree-demo/tree/main/?embed=1&file=%2Fapp%2Fpage.js" style="width:100%;height:500px;border:0;border-radius:4px;overflow:hidden" sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"></iframe>
 
 ![](https://cdn.hashnode.com/res/hashnode/image/upload/v1711494675438/1a9dc806-00ae-4860-88af-f1d9bf989b60.png align="center")
 

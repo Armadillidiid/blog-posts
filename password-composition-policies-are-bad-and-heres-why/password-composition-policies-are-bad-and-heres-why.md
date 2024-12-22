@@ -5,7 +5,9 @@ tags: passwords, security, authentication
 cover: https://raw.githubusercontent.com/Armadillidiid/blog-posts/main/password-composition-policies-are-bad-and-heres-why/cover.webp
 ---
 
-Recently, I came across a [LinkedIn post](https://www.linkedin.com/posts/michael-lin-tech_never-blindly-copy-what-others-do-i-learned-activity-7264454532833640448-Po7m?utm_source=social_share_sheet&utm_medium=member_desktop_web) applauding how Netflix adopted a lax password creation policy pertaining to their specific business model and the worst consequence of a compromised password is your account will be used to **"watch a few movies"**. While the latter is obviously not true lol, it sparked my interest in writing this piece on strict password composition policies and how they often do more harm than good at creating secure passwords.
+Recently, I came across a [LinkedIn post](https://www.linkedin.com/posts/michael-lin-tech_never-blindly-copy-what-others-do-i-learned-activity-7264454532833640448-Po7m?utm_source=social_share_sheet&utm_medium=member_desktop_web) applauding Netflix's lax password creation policy, suggesting that the worst consequence of a compromised password is your account being used to **"watch a few movies"**. While that’s not entirely accurate (_and I doubt they made the decision based on that reasoning lol_), there’s a grain of truth to it.
+
+This sparked my interest in writing this piece on strict password composition policies and how they often do more harm than good at creating secure passwords.
 
 Passwords are the most widely used form of authentication on the internet. And unless you're Nelson Dellis—a five-time USA Memory Champion—most of us tend to pick the easiest passwords we can remember when creating one.
 
@@ -53,15 +55,32 @@ Quoting NIST, here's what they have to say on composition policy:
 >
 > **Note:** _Verifiers are entities that verify user credentials during the authentication process, while CSPs (Credential Service Provider) are the entities that manage and store the user's credentials._
 
-It might not be obvious, but adding complexity doesn't out right reduce the guessability of the password. Yes, you’re correct—-it increases the entropy. But higher entropy doesn't equate to lower guessability. Why?
+It might not be obvious, but adding complexity doesn't out right reduce the guessability of the password. Yes, you’re correct—-it increases the entropy. But higher entropy doesn't necessarily equate to lower guessability. Why?
 
 Well [Shannon's entropy](<https://en.wikipedia.org/wiki/Entropy_(information_theory)>) theoretically assumes outcomes are evenly distributed which isn't true for most real-world password distributions. For example, **"123456"** is far more common to be found in human-choosen password than, say, **"vH8$dq@"**.
 
 > Shannon's Entropy is the measure of theoretical unpredictability of a password based on the possible combinations of characters.
 
-So in essence, even if it's higher, it doesn't necessarily convey to us how secure a password is. It's like saying a 10-character password with 5 bits of entropy is more secure than an 8-character password with 10 bits of entropy. That's not always the case. For example, **"Password123$"** and **"ohgreatsully"** have both 41 bits of entropy when calculated, yet the latter is significantly less guessable in a dictionary attack and would take centuries to crack using brute-force.
+So in essence, even if it's higher, it doesn't necessarily convey to us how secure a password is. It's like saying a password with 10 bits of entropy is more secure than a password with 8 bits of entropy--it's hard to tell without extra analysis.
 
-Highly complex passwords once again introduce a new challenge: they're harder to remember, making users more likely to write them down or store them insecurely. While secure storage solutions like password managers exist, survey shows that only about **32% of people** (at best, based on data from a subset of countries) actually use them, according to Bitwarden's [World Password Day Survey 2024](https://bitwarden.com/resources/world-password-day/). With such low adoption rates, I would say this should be an extra motivation not to enforce long and complex passwords upfront.
+For example, **"Abcdef123456@"** has a higher entropy than **"ohgreatsully"** when calculated, yet the latter is significantly less guessable in a dictionary attack and would take centuries to crack using brute-force.
+| | Entropy | Strength |
+| ------------- | -------------- | -------------- |
+| Qw3rtyui! | 28.53 | Weak |
+| ohgreatsully | 41.00 | Strong |
+| YjCK^i0jMYvjfp | 46.55 | Strong |
+| Abcdef123456@ | 48.11 | Weak |
+| sillyunicornsflyhigh | 68.93 | Strong |
+
+This comparison highlights that entropy **alone** isn’t a reliable indicator.
+
+Highly complex passwords once again introduce a new challenge: they're harder to remember, making users more likely to write them down or store them insecurely.
+
+This comic from xkcd perfectly illustrates this:
+
+![xkcd](https://imgs.xkcd.com/comics/password_strength.png)
+
+While secure storage solutions like password managers exist, survey shows that only about **32% of people** (at best, based on data from a subset of countries) actually use them, according to Bitwarden's [World Password Day Survey 2024](https://bitwarden.com/resources/world-password-day/). With such low adoption rates, I would say this should be an extra motivation not to enforce long and complex passwords upfront.
 
 Despite everything I've said so far, there's one exception to the rule: **the minimum length requirement**. It is the only useful recommended composition policy--provided it's used within reason.
 
@@ -103,36 +122,47 @@ But wait--there’s more that could be done!
 
 ### Evaluate Password Strength, not Complexity
 
-Building upon blacklists, we can take it a step further by creating a function to dynamically evaluate the guessability of the password based on multiple factors such as length, dates (e.g, birthdays), repeated characters (e.g, "aaaaaa"), sequences (e.g, "abcdef", "1233456"), spatial words based keyboard layout(e.g,"qwerty"), leet-speak (e.g, "H3ll0" => "Hello") and brute-force weakness. We take all these factors into account and assign a guessability score to the password. With this score, we can reject any password whose guessability falls below a set threshold.
+Building upon blacklists, we can take it a step further by creating a function to dynamically evaluate the guessability of the password based on multiple factors such as:
 
-What’s more, we can even randomly suggest a new password with a higher guessability and educate users as well about what constitutes a strong password.
+- Length
+- Dates
+- Repeated characters (e.g., `aaaaaa`)
+- Sequences (e.g., `abcdef`, `123456`)
+- Keyboard layout (e.g., `qwerty`)
+- Leet-speak substitutions (e.g., `H3ll0` → `Hello`)
+- Brute-force weaknesses
+- Entropy
 
-You might be thinking to yourself--"That's sound like a lot of work". And you're dead right. But fortunately for us, some fantastic engineers at Dropbox created a tool to solve this very issue a while back called [zxcvbn](https://github.com/dropbox/zxcvbn). Albeit, it's now old and unmaintained, there's a fork implementation for every programming language out there. For JavaScript users, you can check out [zxcvbn-ts](https://github.com/zxcvbn-ts/zxcvbn).
+We take into account all these factors and score them individually, with their total sum forming the guessability score for the password. With this score in hand, we can reject any password whose guessability falls below a set threshold.
+
+You might be thinking to yourself--"That's sound like a lot of work". And you're absolutely right. Fortunately for us, some fantastic engineers at Dropbox already created a tool to solve this very issue a while back called [zxcvbn](https://github.com/dropbox/zxcvbn).
+
+Albeit, it's now old and unmaintained, there are fork implementations available for nearly every programming language out there. For JavaScript users, you can check out [zxcvbn-ts](https://github.com/zxcvbn-ts/zxcvbn).
 
 Here's what NIST has to say on password strength estimation:
 
-> Verifiers SHALL offer guidance to the subscriber to assist the user in choosing a strong password.
+> "Verifiers SHALL offer guidance to the subscriber to assist the user in choosing a strong password."
 
 Effectively, with the guessability data from our password strength estimator of choice, we can use that response to create strength meters, alert cards, etc. to guide the user into creating more secure passwords.
 
-## Password Strength Estimator Demo
+## Live Demo 🔴
 
-To demo estimating password strength, I built a web app that lets you compare composition policies against guessability metrics using [zxcvbn-ts](https://github.com/dropbox/zxcvbn) and [Have I Been Pwned API](https://haveibeenpwned.com/API/v3). You can [check it out here](https://password-strength-checker-eta-navy.vercel.app).
+To showcase estimating password strength, I built a web app that lets you compare composition policies against guessability metrics using [zxcvbn-ts](https://github.com/dropbox/zxcvbn) and [Have I Been Pwned API](https://haveibeenpwned.com/API/v3). You can [check it out here](https://password-strength-checker-eta-navy.vercel.app).
 
 Upon inputting your password, you'll get to see its guessability score, estimated time to crack, pattern matches, and whether it has been compromised. You can find the [source code here](https://github.com/Armadillidiid/password-strength-checker).
 
-As shown in the screenshot below, `P@ssword1'` meets all composition policy requirements but returns a terrible guessability metric. Go ahead and give it a try for yourself.
+As shown in the screenshot below, `P@ssword1` meets all composition policy requirements but returns a terrible guessability metric. Go ahead and give it a try for yourself.
 
 ![`P@ssword1` Strength Result](https://raw.githubusercontent.com/Armadillidiid/blog-posts/main/password-composition-policies-are-bad-and-heres-why/screenshot-password-strength-checker.png)
 
 ## Conclusion
 
-Hopefully, I was able to demonstrate to you that the concept of password entropy, as commonly applied by the most websites (through composition policies), fails to serve as a reliable metric for assessing the security of password.
+Hopefully, I was able to demonstrate to you that the concept of password entropy, as commonly applied by the most websites (through composition policies), fails to serve as a reliable metric for assessing the security of password **when used on its own**.
 
 While these composition policies are well-intentioned, they often fall short of their goal. A significant subset of users will still choose easy-to-guess passwords, like `P@ssword1`, that technically comply with the policy but remain highly vulnerable to attackers.
 
 It's time we move past strict password composition policies--they're not helping anyone. We've seen that it's possible to improve password security without sacrificing user experience.
 
-If you really think it's not enough, you can also consider implementing Multi-Factor Authentication (MFA). That way even if a password is compromised, the attacker can't gain access without the second factor.
+If you're still not convinced, you can also consider implementing Multi-Factor Authentication (MFA). That way even if a password is compromised, the attacker can't gain access without the second factor.
 
 Thanks for reading! I hope you found this article helpful. Feel free to leave a comment if you have any further questions or suggestions.

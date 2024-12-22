@@ -6,7 +6,6 @@ cover: https://raw.githubusercontent.com/Armadillidiid/blog-posts/main/password-
 ---
 
 Recently, I came across a [LinkedIn post](https://www.linkedin.com/posts/michael-lin-tech_never-blindly-copy-what-others-do-i-learned-activity-7264454532833640448-Po7m?utm_source=social_share_sheet&utm_medium=member_desktop_web) applauding how Netflix adopted a lax password creation policy pertaining to their specific business model and the worst consequence of a compromised password is your account will be used to **"watch a few movies"**. While the latter is obviously not true lol, it sparked my interest in writing this piece on strict password composition policies and how they often do more harm than good at creating secure passwords.
-how i have a public folder in my github storing images. how do i access via url in my project?
 
 Passwords are the most widely used form of authentication on the internet. And unless you're Nelson Dellis—a five-time USA Memory Champion—most of us tend to pick the easiest passwords we can remember when creating one.
 

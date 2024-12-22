@@ -280,7 +280,7 @@ Let's change the name of our project to match naming previous naming convention 
 By default, Vite builds our assets in app mode using `index.html` as the entry file. However, we intend to build our app in library mode and expose the `main.ts` file as the entry point for our package. Let's proceed to modify the Vite configuration to accommodate this. Also while we're at it, we'll install a Vite plugin to auto-generate declaration files for our library.
 
 ```bash
-pnpm ui add -D vite-plugin-dts @types/node
+pnpm -w ui add -D vite-plugin-dts @types/node
 ```
 
 `/packages/ui/vite.config.ts`
@@ -340,7 +340,7 @@ We now have a basic functional component named `Button` that accepts all possibl
 Let's head back to our main application and import our `ui` package. First, we have to install the library under `monorepo/@frontend` using the workspace filter command:
 
 ```bash
-pnpm frontend add @monorepo/ui
+pnpm -w frontend add @monorepo/ui
 ```
 
 > NOTE: By default, when we try to install a package, pnpm will always try to link the package from our workspace based on the declared range. This wasn't always the case before; if the range wasn't matched, it would install the package from the npm registry. With the "`workspace:`" protocol, pnpm will refuse to resolve to anything other than a local workspace package.
@@ -362,7 +362,7 @@ Inside the `@frontend` application, our `package.json` should look similar to th
 Lastly, let's build our `@ui` library. We can't import anything if there's no output artifact to begin with.
 
 ```bash
-pnpm ui build
+pnpm -w ui build
 ```
 
 That's it, now we should be able to import our components or whatever is exported from the `ui` package.

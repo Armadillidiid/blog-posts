@@ -5,13 +5,9 @@ tags: passwords, security, authentication
 cover: https://raw.githubusercontent.com/Armadillidiid/blog-posts/main/password-composition-policies-are-bad-and-heres-why/cover.webp
 ---
 
-Recently, I came across a [LinkedIn post](https://www.linkedin.com/posts/michael-lin-tech_never-blindly-copy-what-others-do-i-learned-activity-7264454532833640448-Po7m?utm_source=social_share_sheet&utm_medium=member_desktop_web) applauding Netflix's lax password creation policy, suggesting that the worst consequence of a compromised password is your account being used to **"watch a few movies"**. While that’s not entirely accurate (_and I doubt they made the decision based on that reasoning lol_), there’s a grain of truth to it.
+Passwords are the most widely used form of authentication on the internet. And unless you're Nelson Dellis—a six-time USA Memory Champion—most of us tend to pick the easiest passwords we can remember when creating one.
 
-This sparked my interest in writing this piece on strict password composition policies and how they often do more harm than good at creating secure passwords.
-
-Passwords are the most widely used form of authentication on the internet. And unless you're Nelson Dellis—a five-time USA Memory Champion—most of us tend to pick the easiest passwords we can remember when creating one.
-
-I must admit, I've never been a big fan of passwords, especially with the availability of more secure authentication options like OAuth, magic links, and passkeys. Passwords inherently carry more security risks compared to other alternatives and should ideally be paired with Multi-Factor Authentication (MFA) to be considered truly secure.
+I must admit, I've never been a big fan of passwords, especially with the availability of more secure authentication options like OAuth, magic links, and passkeys. Passwords inherently carry more security risks compared to other alternatives and have to be paired with Multi-Factor Authentication (MFA) to be considered truly secure.
 
 Secure password generation is complicated by the tradeoff between developing passwords which are both easy to remember and difficult to crack. To help guard against the latter, password composition policies are enforced to coerce users to create secure passwords. However, they often fail to achieve their intended purpose.
 
@@ -19,17 +15,17 @@ I'm sure you've experienced this before: you go to a website's sign-up page, and
 
 Fortunately, in recent years, the rise of password managers has helped dampen this issue. We are now able to create long, random passwords for each site we visit and at the same store them securely. But password managers aren't widely adopted yet in the space, so the original issue still semi persists.
 
-This matter of subject is luckily very well researched and has been discussed by many security experts, with the most notable being the National Institute of Standards and Technology (NIST). They have published guidelines on digital identity management, which one of them talks about password composition policies called [SP 800-63B](https://pages.nist.gov/800-63-4/sp800-63b.html). Not gonna lie--It's a long read. But it's definitely worth it, as it gets updated regularly to keep pace with latest findings.
+This matter of subject is luckily very well researched and has been discussed by many security experts, with the most notable being the National Institute of Standards and Technology (NIST). They have published guidelines on digital identity management, which one of them talks about password composition policies called [SP 800-63B](https://pages.nist.gov/800-63-4/sp800-63b.html). Not gonna lie--It's a long read. But it's definitely worth it, as it gets updated regularly to keep up with latest findings.
 
 Also there's a [published paper by Florida State University](https://doi.org/10.1145/1866307.1866327) on password creation policies where they test real leaked passwords from database breaches against composition policies to examine the result effect.
 
-I'll be referencing both of these in this article to better explain to you why password composition policies are bad and what we better approaches we can take to encourage users to create secure passwords. It's also good note that I'll be focusing only on online environments for composition policies, not offline.
+I'll be referencing both of these in this article to better explain to you why password composition policies are bad and what better approaches we can take to encourage users to create secure passwords. It's also good note that I'll be focusing only in the application of online environments, not offline.
 
 Without no further ado, let's dive in.
 
-## Problem with Composition Policies and Entropy
+## Composition Policies and Entropy
 
-Composition policies are rules that dictate what constitutes an acceptable password to the user before they proceed to create it. These rules typically include requirements like a minimum length, a mix of uppercase and lowercase letters, numbers, and special characters The goal is to make passwords more secure by increasing the entropy (more on that later). For example, a policy might mandate users include at least one digit in their password.
+Composition policies are rules that dictate what constitutes an acceptable password to the user before they can proceed to create it. These rules typically include requirements like a minimum length, a mix of uppercase and lowercase letters, numbers, and special characters. The goal is to make the password more secure by increasing the entropy (more on that later). For example, a policy might mandate users include at least one digit in their password.
 
 However, research consistently shows that users respond to these requirements in predictable ways when forced. In the [Florida State University research paper](https://doi.org/10.1145/1866307.1866327), after performing a dictionary attack on 14 million passwords from [RockYou](https://en.wikipedia.org/wiki/RockYou) database breach, researchers found that users often appended a digit to the end of an otherwise weak password. This highlights how composition policies can fail to deliver their intended security benefits. Here’s what they further had to say:
 
@@ -41,27 +37,27 @@ However, research consistently shows that users respond to these requirements in
 
 You can utilize [Have I Been Pwned](https://haveibeenpwned.com/API/v3) API to confirm this yourself if in doubt.
 
-Another important observation is that the numbers users choose are often predictable. What do I mean? According to the same [Florida State University research paper](https://doi.org/10.1145/1866307.1866327), the digits “1” through “9” account for **36.25%** of the top 10 most common digits used in passwords, with **“1”** being the most frequent.
+Another important observation is that the numbers users choose are often predictable too. What do I mean? According to the same [research paper](https://doi.org/10.1145/1866307.1866327), the digits **“1”** through **“9”** account for **36.25%** of the top 10 most common digits used in passwords, with **“1”** being the most frequent.
 
 The above pattern extends to uppercase letters and special characters as well. Over **50%** of users capitalize the first letter of their password when required to include an uppercase character, while **36.37%** append a special character to the end of their password.
 
-Interestingly, when composition policies require both a **special character** and a **digit**-—a common requirement in most policies—it was found that special characters are more often followed by a digit rather than the other way around.
+Interestingly, when composition policies require both a **special character** and a **digit**-—a common requirement seen in most policies—it was found that special characters are more often followed by a digit rather than the other way around.
 
-This significantly reduces the key-space of possible passwords, making them easier to guess. In the event of an attack, a malicious actor would be fully aware of these constraints and their predictable effects. They would leverage this knowledge to reduce the number of possible guesses needed to crack the password.
+All these significantly reduces the key-space of possible passwords, making them easier to guess. In the event of an attack, a malicious actor would be fully aware of these constraints and their predictable effects. They would leverage this knowledge to reduce the number of possible guesses needed to crack the password.
 
 Quoting NIST, here's what they have to say on composition policy:
 
 > "Verifiers and CSPs SHALL NOT impose other composition rules (e.g., requiring mixtures of different character types) for passwords."
->
+
 > **Note:** _Verifiers are entities that verify user credentials during the authentication process, while CSPs (Credential Service Provider) are the entities that manage and store the user's credentials._
 
-It might not be obvious, but adding complexity doesn't out right reduce the guessability of the password. Yes, you’re correct—-it increases the entropy. But higher entropy doesn't necessarily equate to lower guessability. Why?
+It might not be obvious, but increasing the key-space (the total number of possible combinations for a password) through composition policies doesn't out right reduce the number of guesses needed to crack the password. Yes, you’re correct—-it increases the entropy. But higher entropy doesn't always equate to lower guessability. Why?
 
 Well [Shannon's entropy](<https://en.wikipedia.org/wiki/Entropy_(information_theory)>) theoretically assumes outcomes are evenly distributed which isn't true for most real-world password distributions. For example, **"123456"** is far more common to be found in human-choosen password than, say, **"vH8$dq@"**.
 
 > Shannon's Entropy is the measure of theoretical unpredictability of a password based on the possible combinations of characters.
 
-So in essence, even if it's higher, it doesn't necessarily convey to us how secure a password is. It's like saying a password with 10 bits of entropy is more secure than a password with 8 bits of entropy--it's hard to tell without extra analysis.
+So in essence, even if it's higher, it doesn't necessarily convey to us how secure the password is. It's like saying a password with 10 bits of entropy is more secure than a password with 8 bits of entropy--it's hard to tell without extra analysis.
 
 For example, **"Abcdef123456@"** has a higher entropy than **"ohgreatsully"** when calculated, yet the latter is significantly less guessable in a dictionary attack and would take centuries to crack using brute-force.
 | | Entropy | Strength |
@@ -72,29 +68,29 @@ For example, **"Abcdef123456@"** has a higher entropy than **"ohgreatsully"** wh
 | Abcdef123456@ | 48.11 | Weak |
 | sillyunicornsflyhigh | 68.93 | Strong |
 
-This comparison highlights that entropy **alone** isn’t a reliable indicator.
+This highlights that entropy **alone** isn’t a reliable indicator.
 
-Highly complex passwords once again introduce a new challenge: they're harder to remember, making users more likely to write them down or store them insecurely.
+Highly complex passwords introduce another challenge: they're harder to remember, making users more likely to write them down or store them insecurely.
 
-This comic from xkcd perfectly illustrates this:
+This comic from [xkcd](https://xkcd.com/936/) perfectly summarizes it:
 
-![xkcd](https://imgs.xkcd.com/comics/password_strength.png)
+![xkcd: Password Strength](https://imgs.xkcd.com/comics/password_strength.png)
 
 While secure storage solutions like password managers exist, survey shows that only about **32% of people** (at best, based on data from a subset of countries) actually use them, according to Bitwarden's [World Password Day Survey 2024](https://bitwarden.com/resources/world-password-day/). With such low adoption rates, I would say this should be an extra motivation not to enforce long and complex passwords upfront.
 
-Despite everything I've said so far, there's one exception to the rule: **the minimum length requirement**. It is the only useful recommended composition policy--provided it's used within reason.
+Despite everything I've said so far, there's one exception to the rule: **the minimum length requirement**. It is the only useful recommended composition policy--provided it's **used within reason.**
 
-The reason is simple: the number of possible combinations increases exponentially with the length of the password. For example, **a 10-character password** has 10^16 possible combinations, while a **20-character password** has 10^32 possible combinations.
+This is because the number of possible combinations increases exponentially with the length of the password. For example, **a 10-character password** has 26^10 possible combinations, while a **20-character password** has 26^20 possible combinations.
 
 Here's **NIST's** take on password length:
 
 > "Verifiers and CSPs SHALL require passwords to be a minimum of eight characters in length and SHOULD require passwords to be a minimum of 15 characters in length."
 
-Password length is a primary factor in characterizing password strength, so users should be encouraged to make their passwords as lengthy as they want. The more characters in a password, the more secure it is. Too short would put the users at severe risk to brute-force and dictionary attacks.
+Password length is the primary factor in characterizing password strength, so users should be encouraged to make their passwords as lengthy as they want. The more characters in a password, the more secure it is. Too short would put the users at risk to brute-force and dictionary attacks.
 
 ## A Better Approach
 
-So far, we're looked at **what not to do**. Now, let's discuss **what to do** to improve password security without the need for composition policies:
+So far, we're looked at **what not to do**. Now, let's touch on **what to do** to improve password security without the need for composition policies:
 
 ### Check Passwords Against a Blacklist
 
@@ -110,15 +106,13 @@ One of the most effective ways to improve password security is to check password
 
 If a password matches an entry on the blacklist, it should be rejected, and the user should be prompted to choose a different password, with a clear reason for rejection provided.
 
-According to one of the test cases carried out in the [Florida research paper](), a blacklist of 50,000 entries was tested against 32 million compromised passwords with a maximum of 256 guesses. The results showed that the percentage pool of passwords found to be crackable **with the blacklist was 0.058%**, compared to **up to 14% without any blacklist**.
+According to one of the test cases carried out in the [Florida research paper](), a blacklist of 50,000 entries was tested against 32 million compromised passwords with a maximum of 256 guesses. The results showed that the percentage pool of passwords found to be crackable **with the blacklist was 0.058%**, compared to **up to 14% without one**.
 
-Second shoutout to [Have I Been Pwned API](https://haveibeenpwned.com/API/v3). They're a reliable way to source up-to-date list of compromised passwords for your blacklist from latest security database breaches.
+You can use the [Have I Been Pwned API](https://haveibeenpwned.com/API/v3) to access up-to-date list of compromised passwords for your blacklist.
 
-In as much as blacklist is great, we're only able to compare the entire string, not substrings or words that might be contained therein. This is a hard limitation but there's more that could done to circumvent this.
+However, in as much as blacklists are incredibly useful, they come with a hard limitation: they can only compare entire strings, not substrings or individual words contained within a password. This caveat makes it impossible to detect sub-patterns.
 
-In as much as blacklists are incredibly useful, they come with a hard limitation: they can only compare entire strings, not substrings or individual words contained within a password. This limitation makes it impossible to detect sub-patterns.
-
-But wait--there’s more that could be done!
+But wait--there’s solution!
 
 ### Evaluate Password Strength, not Complexity
 
@@ -135,7 +129,7 @@ Building upon blacklists, we can take it a step further by creating a function t
 
 We take into account all these factors and score them individually, with their total sum forming the guessability score for the password. With this score in hand, we can reject any password whose guessability falls below a set threshold.
 
-You might be thinking to yourself--"That's sound like a lot of work". And you're absolutely right. Fortunately for us, some fantastic engineers at Dropbox already created a tool to solve this very issue a while back called [zxcvbn](https://github.com/dropbox/zxcvbn).
+You might be thinking to yourself--**"That's sound like a lot of work"**. And you're absolutely right. Fortunately for us, some fantastic engineer at Dropbox already created a tool to solve this very issue a while back called [zxcvbn](https://github.com/dropbox/zxcvbn).
 
 Albeit, it's now old and unmaintained, there are fork implementations available for nearly every programming language out there. For JavaScript users, you can check out [zxcvbn-ts](https://github.com/zxcvbn-ts/zxcvbn).
 
@@ -159,10 +153,10 @@ As shown in the screenshot below, `P@ssword1` meets all composition policy requi
 
 Hopefully, I was able to demonstrate to you that the concept of password entropy, as commonly applied by the most websites (through composition policies), fails to serve as a reliable metric for assessing the security of password **when used on its own**.
 
-While these composition policies are well-intentioned, they often fall short of their goal. A significant subset of users will still choose easy-to-guess passwords, like `P@ssword1`, that technically comply with the policy but remain highly vulnerable to attackers.
+A significant subset of users will still choose easy-to-guess passwords, like `P@ssword1`, that technically comply with the policy but remain highly vulnerable to attackers.
 
 It's time we move past strict password composition policies--they're not helping anyone. We've seen that it's possible to improve password security without sacrificing user experience.
 
 If you're still not convinced, you can also consider implementing Multi-Factor Authentication (MFA). That way even if a password is compromised, the attacker can't gain access without the second factor.
 
-Thanks for reading! I hope you found this article helpful. Feel free to leave a comment if you have any further questions or suggestions.
+That's all I have for now. Thanks for reading and I hope you found this article helpful.

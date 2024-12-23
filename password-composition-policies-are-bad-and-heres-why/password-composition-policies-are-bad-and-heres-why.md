@@ -60,13 +60,14 @@ Well [Shannon's entropy](<https://en.wikipedia.org/wiki/Entropy_(information_the
 So in essence, even if it's higher, it doesn't necessarily convey to us how secure the password is. It's like saying a password with 10 bits of entropy is more secure than a password with 8 bits of entropy--it's hard to tell without extra analysis.
 
 For example, **"Abcdef123456@"** has a higher entropy than **"ohgreatsully"** when calculated, yet the latter is significantly less guessable in a dictionary attack and would take centuries to crack using brute-force.
-| | Entropy | Strength |
-| ------------- | -------------- | -------------- |
-| Qw3rtyui! | 28.53 | Weak |
-| ohgreatsully | 41.00 | Strong |
-| YjCK^i0jMYvjfp | 46.55 | Strong |
-| Abcdef123456@ | 48.11 | Weak |
-| sillyunicornsflyhigh | 68.93 | Strong |
+
+|                      | Entropy | Strength |
+| -------------------- | ------- | -------- |
+| Qw3rtyui!            | 28.53   | Weak     |
+| ohgreatsully         | 41.00   | Strong   |
+| YjCK^i0jMYvjfp       | 46.55   | Strong   |
+| Abcdef123456@        | 48.11   | Weak     |
+| sillyunicornsflyhigh | 68.93   | Strong   |
 
 This highlights that entropy **alone** isn’t a reliable indicator.
 

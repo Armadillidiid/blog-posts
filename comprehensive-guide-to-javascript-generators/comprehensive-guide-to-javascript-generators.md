@@ -6,12 +6,12 @@ Generators are a powerful concept in programming that allows you to easily defin
 abstraction that allows you to write code that can be paused and resumed, allowing you to control the
 execution flow.
 
-In this article, we’ll go over what are generators functions, how to create and iterate over them,
+In this article, we’ll go over what are generators functions, how to create them, and
 their usefulness in processing streams of data and long-running asynchronous operations.
 
 ## Understanding JavaScript Generators?
 
-A function generator is a special type of function that returns a `Generator` object and conforms to the [iterable protocol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) and the [iterator protocol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterator_protocol). They were first introduced in [ES5](https://262.ecma-international.org/6.0) and have since become a fundamental part of the language.
+A generator function is a special type of function that returns a `Generator` object and conforms to the [iterable protocol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) and the [iterator protocol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterator_protocol). They were first introduced in [ES5](https://262.ecma-international.org/6.0) and have since become a fundamental part of the language.
 
 They are defined using the function keyword suffixed with an asterisks like so `function*`. Here's an example:
 
@@ -148,8 +148,6 @@ The request will respond with a JSON object that looks similar to this:
       "price": 1899.99
     },
     {...},
-    {...},
-    {...}
     // 10 items
   ],
   "total": 194,
@@ -202,6 +200,89 @@ Red Nail Polish
 
 ## Generators as State Machines
 
-## RxJS vs Generators for Processing Streams
+Generators can function as simple state machines due to their ability to remember their previous state. However, it's important to note that while they can be used for this purpose, they aren't practical choice compared to the built-in solutions provided by your perhaps JS framework of choice. The share amount of code required to implement a state machine using generators more than often outweigh the benefits.
 
-## Conclusion
+If you are still interested in exploring that path, I recommend looking into the [Actor model](https://en.wikipedia.org/wiki/Actor_model), which originates from Erlang programming language. Although discussing the [Actor model](https://en.wikipedia.org/wiki/Actor_model) is beyond the scope of this article, it's one of the better ways to manage state if you do decide to proceed.
+
+> In the Actor model, **actors** are independent entities that encapsulate their own state and behavior. They communicate exclusively only through message passing, ensuring that state is modified only by the actor itself.
+
+## RxJS vs Generators for Processing Web Streams
+
+When it comes to processing streams of data, both JavaScript Generators and [RxJS](https://rxjs.dev) are great tools but each comes with their strength and weaknesses. Lucky for us, they aren't mutually exclusive as we can make use of both.
+
+To showcase this, let's imagine we have an endpoint that returns a multiple randomized 8-character string as a stream. For the first step, We can use a generator function to lazily yield chunks of data as we fetch it from the stream:
+
+```typescript
+// Fetch data from HTTP stream
+async function* fetchStream() {
+  const response = await fetch("https://example/api/stream");
+  const reader = response.body?.getReader();
+  if (!reader) throw new Error();
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      yield value;
+    }
+  } catch (error) {
+    throw error;
+  } finally {
+    reader.releaseLock();
+  }
+}
+```
+
+Calling the `fetchStream()` function will return an async generator that we can use to iterate over the chunks of the stream. This is where RxJS comes in handy as it provides a rich set of operators to transform and filter streams of asynchronous data. We'll now use the `take` operator filter the first 5 chunks of data:
+
+```typescript
+import { from, take } from "rxjs";
+
+// Consume HTTP stream using RxJS
+async () => {
+  from(fetchStream())
+    .pipe(take(5))
+    .subscribe({
+      next: (chunk) => {
+        const decoder = new TextDecoder();
+        console.log("Chunk:", decoder.decode(chunk));
+      },
+      complete: () => {
+        console.log("Stream complete");
+      },
+    });
+};
+```
+
+> If you are new to RxJS, the `from` operator converts the async generator into an observable. This allows us to `subscribe` and access the fetched data as if it were synchronous.
+
+Looking at our log output after decoding, we should be able to see the first 5 chunks of the stream:
+
+```txt
+Chunk: ky^p1egh
+Chunk: 1q)zIz43
+Chunk: xm5aJGSX
+Chunk: GSx6a2UQ
+Chunk: GFlwWPu^
+Stream complete
+```
+
+We could also use a `for await...of` loop to go through `fetchStream()` and get the same result. But with this approach, we miss out on RxJS operators, which make it easier to manipulate the stream in more flexible ways.
+
+```typescript
+// Consume the HTTP stream using for-await-of
+for await (const chunk of fetchStream()) {
+  const decoder = new TextDecoder();
+  console.log("Chunk:", decoder.decode(chunk));
+}
+```
+
+For example, we can't use the `take` operator to limit the number of chunks we want to consume. However, this limitation won't last forever. When [Iteration Helpers](https://github.com/tc39/proposal-iterator-helpers) land in the next version of ECMAScript (currently at Stage 4 and already merged into the TC39 spec), we’ll have built-in utilities for these use cases—reducing the need for external dependencies.
+
+That said, RxJS remains an incredibly powerful tool for managing complex asynchronous data flows and will likely continue to play an important role in scenarios that demand more advanced stream manipulation.
+
+### Conclusion
+
+Generators are a great feature for creating custom iterators and handling synchronous and asynchronous operations in a straightforward manner. They allow you to pause and resume execution, making them ideal for scenarios where you need fine-grained control over the iteration process.
+
+On the other hand, RxJS is a library for composing asynchronous and event-based programs. It provides a rich set of operators to transform and filter asynchronous events as collections.

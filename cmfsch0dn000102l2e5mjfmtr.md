@@ -29,7 +29,7 @@ With my exam scheduled, I took all 6 practice exam over the course of 2 weeks in
 | 1st (Exam mode) | 72% | 75% | 73% | 73% | 86% | 76% |
 | 2nd (Practice mode) | 89% | 92% | 84% | \- | \- | \- |
 
-Just to touch a little more on my exp. using TD vs Stepane practice questions. TL;DR, TD's question is more similar to the real exam question and thoughtfully crafted. It was doubtfully noticeable within the first 15 questions.
+Just to touch a little more on my exp. using TD vs Stepane practice questions. TL;DR, TD's question is more similar to the real exam question and thoughtfully crafted. It was undoubtedly noticeable within the first 15 questions.
 
 Some of Stephane's question felt poorly worded and would lead to you picking the wrong answer. Nevertheless, they were mostly okay, but get TD if you can.
 
